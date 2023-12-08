@@ -1,0 +1,24 @@
+name: Automated PR Creation
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  create_pr_if_tested:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Check for "TESTED" in Commit Description
+        run: |
+          if git log --format=%B -n 1 | grep -i "TESTED"; then
+            echo "TESTED found in the latest commit description. Creating a pull request."
+            # Add commands to create a pull request to another branch here
+            # Example: gh pr create --base main --head dev
+          else
+            echo "TESTED not found in the latest commit description. No automatic pull request creation."
+          fi
