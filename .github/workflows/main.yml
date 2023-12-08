@@ -1,24 +1,44 @@
-name: Automated PR Creation
+name: Merge PR to Int with "TESTED" Commits
 
 on:
-  push:
-    branches:
-      - Dev
+  pull_request:
+    branches: [ Dev ]
 
 jobs:
-  create_pr_if_tested:
+  merge:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - name: Check for "TESTED" in Commit Description
+      # Check if any commit message contains "TESTED"
+      - name: Check for "TESTED" in commit messages
         run: |
-          if git log --format=%B -n 1 | grep -i "TESTED"; then
-            echo "TESTED found in the latest commit description. Creating a pull request to Int."
-            # Add commands to create a pull request to the "Int" branch here
-            # Example: gh pr create --base Int --head Dev
-          else
-            echo "TESTED not found in the latest commit description. No automatic pull request creation."
-          fi
+          git log --oneline | grep -i "TESTED" && exit 0 || exit 1
+
+      # If "TESTED" found, merge the pull request
+      - name: Merge pull request
+        if: steps.check.exit_code == 0
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              merge_method: 'merge',
+            });
+          token: ${{ secrets.SECRET_KEY }}
+
+      # If "TESTED" not found, comment on the pull request
+      - name: Comment on pull request
+        if: steps.check.exit_code != 0
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: 'Pull request cannot be merged automatically. Please add "TESTED" to a commit message.'
+            });
+
