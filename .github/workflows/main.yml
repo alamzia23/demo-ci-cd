@@ -1,44 +1,25 @@
-name: Merge PR to Int with "TESTED" Commits
+name: List Commits from Merged PRs
 
 on:
-  pull_request:
-    branches: [ Dev ]
+  push:
+    branches:
+      - main
 
 jobs:
-  merge:
+  list-commits:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      # Check if any commit message contains "TESTED"
-      - name: Check for "TESTED" in commit messages
-        run: |
-          git log --oneline | grep -i "TESTED" && exit 0 || exit 1
+    - name: Set up Git
+      run: git config --global user.email "you@example.com" && git config --global user.name "Your Name"
 
-      # If "TESTED" found, merge the pull request
-      - name: Merge pull request
-        if: steps.check.exit_code == 0
-        uses: actions/github-script@v5
-        with:
-          script: |
-            github.rest.pulls.merge({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.payload.pull_request.number,
-              merge_method: 'merge',
-            });
-          token: ${{ secrets.SECRET_KEY }}
-
-      # If "TESTED" not found, comment on the pull request
-      - name: Comment on pull request
-        if: steps.check.exit_code != 0
-        uses: actions/github-script@v5
-        with:
-          script: |
-            github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-              body: 'Pull request cannot be merged automatically. Please add "TESTED" to a commit message.'
-            });
-
+    - name: List Commits from Merged PRs
+      run: |
+        for pr_commit in $(git log --merges --grep='TESTED' --pretty=format:"%H" | sort -u); do
+          echo "Commits for merged PR $pr_commit:"
+          git log --oneline $pr_commit^..$pr_commit
+          echo "----------------------------------------"
+        done
