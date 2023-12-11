@@ -14,7 +14,7 @@ jobs:
         run: |
           stdout=$(curl -H "Authorization: token ${{ secrets.SECRET_KEY }}" \
             "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls?state=closed&merged=true")
-          echo "stdout=$stdout" >> $GITHUB_OUTPUT
+          echo "stdout=$stdout" >> "$GITHUB_OUTPUT"
       
       - name: Parse merged pull requests
         id: parse_merged_prs
