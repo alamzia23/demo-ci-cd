@@ -12,7 +12,7 @@ jobs:
       - name: Get merged pull requests
         id: get_merged_prs
         run: |
-         # stdout=$(curl -H "Authorization: token ${{ secrets.SECRET_KEY }}" \
+          stdout=$(curl -H "Authorization: token ${{ secrets.SECRET_KEY }}" \
             "https://api.github.com/repos/alamzia23/demo-ci-cd/pulls?state=closed")
          # delimiter=$(openssl rand -hex 8)
        #   echo "OUT<<$delimiter" >> $GITHUB_OUTPUT
