@@ -24,10 +24,10 @@ jobs:
        # run: |
        #   jq --raw-output '.[] | {pull_number: .number, commits: .commits}' <<< ${{ steps.get_merged_prs.outputs.stdout }}
       
-      - name: Get commits with "TESTED" comment
-        id: get_tested_commits
-        run: |
-          jq -r '.[] | select(.commits | any(.message | contains("TESTED") or any(.comments[].body | contains("TESTED")))) | .commits | map(.sha)' <<< ${{ steps.parse_merged_prs.outputs.stdout }}
+    #  - name: Get commits with "TESTED" comment
+     #   id: get_tested_commits
+     #   run: |
+      #    jq -r '.[] | select(.commits | any(.message | contains("TESTED") or any(.comments[].body | contains("TESTED")))) | .commits | map(.sha)' <<< ${{ steps.parse_merged_prs.outputs.stdout }}
 
       - name: Output commit SHAs
         run: |
