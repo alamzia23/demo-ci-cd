@@ -18,6 +18,7 @@ jobs:
 
     - name: List Commits from Merged PRs
       run: |
+        git log
         git log --merges --grep='TESTED' --pretty=format:"%H" | sort -u
         # for pr_commit in $(git log --merges --grep='TESTED' --pretty=format:"%H" | sort -u); do
          # echo "Commits for merged PR $pr_commit:"
