@@ -7,33 +7,38 @@ jobs:
   get_commits:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Get merged pull requests
         id: get_merged_prs
         run: |
-          # Fetch merged pull requests
-          PRS=$(curl -s -H "Authorization: token ${{ secrets.SECCRETT_KEY }}" \
+          stdout=$(curl -H "Authorization: token ${{ secrets.SECRET_KEY }}" \
             "https://api.github.com/repos/alamzia23/demo-ci-cd/pulls?state=closed")
-          echo "::set-output name=merged_prs::$(echo "$PRS")"
+         # delimiter=$(openssl rand -hex 8)
+       #   echo "OUT<<$delimiter" >> $GITHUB_OUTPUT
+        #  echo "stdout=$stdout" >> $GITHUB_OUTPUT
+       #   echo "$delimiter" >> $GITHUB_OUTPUT
+      
+      #- name: Parse merged pull requests
+       # id: parse_merged_prs
+       # run: |
+       #   jq --raw-output '.[] | {pull_number: .number, commits: .commits}' <<< ${{ steps.get_merged_prs.outputs.stdout }}
+      
+    #  - name: Get commits with "TESTED" comment
+     #   id: get_tested_commits
+     #   run: |
+      #    jq -r '.[] | select(.commits | any(.message | contains("TESTED") or any(.comments[].body | contains("TESTED")))) | .commits | map(.sha)' <<< ${{ steps.parse_merged_prs.outputs.stdout }}
 
-      - name: Filter PRs with "TESTED" comment
-        id: filter_tested_prs
+      - name: Output commit SHAs
         run: |
-          # Use jq to filter PRs with "TESTED" comment
-          TESTED_PRS=$(echo "${{ steps.get_merged_prs.outputs.merged_prs }}" | jq -r '.[] | select(.comments | any(.body | contains("TESTED"))) | .number')
-          echo "::set-output name=tested_prs::${TESTED_PRS}"
-
-      - name: Output tested PRs
-        run: |
-          echo "Merged PRs with 'TESTED' comment:"
-          echo "${{ steps.filter_tested_prs.outputs.tested_prs }}"
-
-      - name: Save tested PRs to file
+          echo "Commits with 'TESTED' comment:"
+          echo ${{ steps.get_tested_commits.outputs.stdout }}
+          
+      - name: Save commit SHAs to file
         if: github.event.inputs.save_file
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          name: tested-prs
+          name: tested-commits
           path: ${{ github.event.inputs.save_file }}
           content-type: text/plain
+
