@@ -13,7 +13,7 @@ jobs:
         id: get_merged_prs
         run: |
           stdout=$(curl -H "Authorization: token ${{ secrets.SECRET_KEY }}" \
-            "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls?state=closed&merged=true")
+            "https://api.github.com/repos/alamzia23/demo-ci-cd/pulls?state=closed")
           delimiter=$(openssl rand -hex 8)
           echo "OUT<<$delimiter" >> $GITHUB_OUTPUT
           echo "stdout=$stdout" >> $GITHUB_OUTPUT
