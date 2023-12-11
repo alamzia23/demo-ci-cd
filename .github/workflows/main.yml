@@ -19,10 +19,10 @@ jobs:
           echo "stdout=$stdout" >> $GITHUB_OUTPUT
           echo "$delimiter" >> $GITHUB_OUTPUT
       
-      - name: Parse merged pull requests
-        id: parse_merged_prs
-        run: |
-          jq --raw-output '.[] | {pull_number: .number, commits: .commits}' <<< ${{ steps.get_merged_prs.outputs.stdout }}
+      #- name: Parse merged pull requests
+       # id: parse_merged_prs
+       # run: |
+       #   jq --raw-output '.[] | {pull_number: .number, commits: .commits}' <<< ${{ steps.get_merged_prs.outputs.stdout }}
       
       - name: Get commits with "TESTED" comment
         id: get_tested_commits
