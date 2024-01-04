@@ -1,10 +1,7 @@
-name: Fetch Comments
+name: Manual Fetch Comments
 
 on:
-  pull_request:
-    types:
-      - closed
-      - synchronize
+  workflow_dispatch:
 
 jobs:
   fetch-comments:
@@ -27,9 +24,9 @@ jobs:
         require 'octokit'
         
         # Replace 'your_actual_token' with your GitHub personal access token
-        client = Octokit::Client.new :access_token => 'your_actual_token'
+        client = Octokit::Client.new :access_token => 'ACCESS_TOKEN'
 
-        # Replace 'octocat/Spoon-Knife' and 1176 with your repository and pull request number
+        # Replace 'alamzia23/demo-ci-cd' and 51984060 with your repository and pull request number
         client.issue_comments("alamzia23/demo-ci-cd", 51984060).each do |comment|
           username = comment[:user][:login]
           post_date = comment[:created_at]
