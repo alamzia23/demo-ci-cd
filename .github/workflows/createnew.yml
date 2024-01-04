@@ -3,7 +3,7 @@ name: Fetch Comments
 on:
   pull_request:
     types:
-      - opened
+      - closed
       - synchronize
 
 jobs:
@@ -30,7 +30,7 @@ jobs:
         client = Octokit::Client.new :access_token => 'your_actual_token'
 
         # Replace 'octocat/Spoon-Knife' and 1176 with your repository and pull request number
-        client.issue_comments("octocat/Spoon-Knife", 1176).each do |comment|
+        client.issue_comments("alamzia23/demo-ci-cd", 51984060).each do |comment|
           username = comment[:user][:login]
           post_date = comment[:created_at]
           content = comment[:body]
