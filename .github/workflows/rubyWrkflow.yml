@@ -1,3 +1,0 @@
-- name: Process comments (closed PRs)
-  run: |
-    ruby process_comments.rb
