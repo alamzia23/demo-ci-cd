@@ -1,33 +1,3 @@
-name: Process Pull Request Comments
-
-on:
-  workflow_dispatch: # Trigger manually
-
-jobs:
-  process_comments:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.1' # Adjust if needed
-      - run: gem install octokit
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUBS_TOKEN }}
-          KEYWORD: 'tested' # Your keyword for filtering
-
-      - name: Process comments (closed PRs)
-        run: |
-          require 'octokit'
-          client = Octokit::Client.new(:access_token => ENV['GITHUB_TOKEN'])
-          comments = []
-          client.pull_requests('${{ github.repository }}', state: 'closed').each { |pr|
-            client.pull_request_comments('${{ github.repository }}', pr.number).each { |comment|
-              if comment[:body].downcase.include?(ENV['TESTED'].downcase)
-                comments << comment
-              end
-            }
-          }
-          # Output the list using GitHub Actions Outputs
-          outputs.comments = comments.map { |comment| comment[:body] }.join("\n")
+- name: Process comments (closed PRs)
+  run: |
+    ruby process_comments.rb
