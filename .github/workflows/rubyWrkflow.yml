@@ -14,9 +14,9 @@ jobs:
           ruby-version: '3.1' # Adjust if needed
       - run: gem install octokit
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUBS_TOKEN }}
-          KEYWORD: 'TESTED'  # Add the keyword as an environment variable
+          GITHUB_TOKEN: ${{ secrets.MY_PERSONAL_TOKEN }}
+          KEYWORD: 'tested'  # Your keyword for filtering
 
       - name: Process comments (closed PRs)
         run: |
-          ruby -e "require 'octokit'; client = Octokit::Client.new(:access_token => ENV['GITHUB_TOKEN']); client.pull_requests('${{ github.repository }}', state: 'closed').each { |pr| client.pull_request_comments('${{ github.repository }}', pr.number).each { |comment| if comment[:body].downcase.include?(ENV['TESTED'].downcase) then puts \"#{comment[:user][:login]} made a comment on #{comment[:created_at]} for the file called #{comment[:path]}, on line #{comment[:position]}. It says:\n'#{comment[:body]}'\n\" end } }"
+          ruby -e "require 'octokit'; client = Octokit::Client.new(:access_token => ENV['GITHUB_TOKEN']); client.pull_requests('${{ github.repository }}', state: 'closed').each { |pr| client.pull_request_comments('${{ github.repository }}', pr.number).each { |comment| if comment[:body].downcase.include?(ENV['TESTED'].downcase) then client.create_pull_request_comment('${{ github.repository }}', pr.number, comment[:body]) end } }"
